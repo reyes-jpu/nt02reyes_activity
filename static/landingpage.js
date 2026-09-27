@@ -1,13 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const currentUserData = localStorage.getItem('currentUser');
-
-    if (!currentUserData) {
-        alert('Please login first to access the dashboard.');
-        window.location.href = 'auth.html';
-        return;
-    }
-
-    const currentUser = JSON.parse(currentUserData);
+    const currentUser = currentUserData ? JSON.parse(currentUserData) : { username: 'Resident' };
 
     const placeholderNames = document.querySelectorAll('.placeholder-name, .account-name');
     placeholderNames.forEach(el => {
