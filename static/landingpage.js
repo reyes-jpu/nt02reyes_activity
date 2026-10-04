@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const currentUserData = localStorage.getItem('currentUser');
-    const currentUser = currentUserData ? JSON.parse(currentUserData) : { username: 'Resident' };
+
+    if (!currentUserData) {
+        alert('Please login first to access the dashboard.');
+        window.location.href = 'auth.php';
+        return;
+    }
+
+    const currentUser = JSON.parse(currentUserData);
 
     const placeholderNames = document.querySelectorAll('.placeholder-name, .account-name');
     placeholderNames.forEach(el => {

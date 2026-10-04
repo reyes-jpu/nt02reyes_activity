@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     // Instead of toggling in place, this button sends the user to login.html
     $('.login-btn').on('click', function () {
-        window.location.href = 'login.html';
+        window.location.href = 'login.php';
     });
 
     // Clear a field's error state as soon as the user starts typing again
@@ -83,7 +83,7 @@ $(document).ready(function () {
         localStorage.setItem('ebrgy_users', JSON.stringify(users));
 
         $('#registerForm')[0].reset();
-        window.location.href = 'login.html';
+        window.location.href = 'login.php';
     });
 
 });

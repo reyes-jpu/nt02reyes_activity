@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     $('.register-btn').on('click', function () {
-        window.location.href = 'register.html';
+        window.location.href = 'register.php';
     });
 
     $('#loginUsername, #loginPassword').on('input', function () {
@@ -47,7 +47,7 @@ $(document).ready(function () {
 
         if (matchedUser) {
             localStorage.setItem('currentUser', JSON.stringify(matchedUser));
-            window.location.href = 'index.html';
+            window.location.href = 'index.php';
         } else {
             $('#loginPasswordError').text('Invalid username or password. Please register first!');
             $password.addClass('input-error');
