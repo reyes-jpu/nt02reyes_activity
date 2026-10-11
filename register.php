@@ -1,3 +1,61 @@
+<?php
+require_once __DIR__ . '/phpfiles/config.php';
+require_once __DIR__ . '/phpfiles/functions.php';
+require_once __DIR__ . '/phpfiles/validation.php';
+
+redirect_if_logged_in();
+
+$errors = [];
+$old    = ['fullname' => '', 'username' => '', 'email' => '', 'mobile' => ''];
+
+// Runs only when the form was submitted with POST (the submit button is named "submit").
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+
+    // Sanitize: remove illegal characters / extra spaces before validating.
+    $old['fullname'] = clean_input(post_value('fullname'));
+    $old['username'] = trim(post_value('username'));
+    $old['email']    = (string) filter_var(trim(post_value('email')), FILTER_SANITIZE_EMAIL);
+    $old['mobile']   = normalize_mobile(post_value('mobile'));
+    $password        = post_value('password');
+    $confirm         = post_value('confirm_password');
+
+    if (!csrf_valid()) {
+        $errors['form'] = 'Your session expired. Please try again.';
+    } else {
+        // 1) Validate the format of every field (regular expressions + filter_var).
+        $errors = validate_registration($old, $password, $confirm);
+
+        // 2) Make sure the username / email are not already taken.
+        if (empty($errors)) {
+            $users = load_users();
+
+            if (find_user($users, 'username', $old['username']) !== null) {
+                $errors['username'] = 'That username is already taken.';
+            }
+            if (find_user($users, 'email', $old['email']) !== null) {
+                $errors['email'] = 'That email is already registered.';
+            }
+        }
+
+        // 3) All good: save the user (password is hashed, never stored as plain text).
+        if (empty($errors)) {
+            $users[] = [
+                'fullname'      => $old['fullname'],
+                'username'      => $old['username'],
+                'email'         => $old['email'],
+                'mobile'        => $old['mobile'],
+                'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+                'created_at'    => date('Y-m-d H:i:s'),
+            ];
+
+            if (save_users($users)) {
+                redirect('login.php?registered=1');
+            }
+            $errors['form'] = 'Could not save your account. Make sure the "data" folder is writable.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,119 +65,108 @@
     <title>EBRGY | Registration</title>
 
     <link rel="stylesheet" href="static/register.css">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.22.1/jquery.validate.min.js" integrity="sha512-qu7dMuIm2f0KcKZ3BOoP4c+Hn+r4E8PbD2Ro4rmKsOyheCxcwhzQpf6SojA76dn+owqfANzfTFUTkGA+HpHjOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="static/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 
 <body>
 
-    <div class="container active" id="container">
+    <div class="container active is-register" id="container">
         <div class="form-box register">
-            <form id="registerForm">
+            <form id="registerForm" method="post" action="register.php" novalidate>
                 <h1>Registration</h1>
 
+                <?= csrf_field() ?>
+
+                <?php if (isset($errors['form'])): ?>
+                    <div class="form-alert error"><?= e($errors['form']) ?></div>
+                <?php endif; ?>
+
                 <div class="input-box">
-                    <input type="text" id="registerUsername" name="Username" placeholder="Username">
+                    <input type="text" id="registerFullname" name="fullname" placeholder="Full Name"
+                           value="<?= e($old['fullname']) ?>" autocomplete="name"
+                           class="<?= isset($errors['fullname']) ? 'input-error' : '' ?>">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <?php if (isset($errors['fullname'])): ?>
+                    <small class="field-error"><?= e($errors['fullname']) ?></small>
+                <?php endif; ?>
+
+                <div class="input-box">
+                    <input type="text" id="registerUsername" name="username" placeholder="Username"
+                           value="<?= e($old['username']) ?>" autocomplete="username"
+                           class="<?= isset($errors['username']) ? 'input-error' : '' ?>">
                     <i class="fa-solid fa-user"></i>
                 </div>
+                <?php if (isset($errors['username'])): ?>
+                    <small class="field-error"><?= e($errors['username']) ?></small>
+                <?php else: ?>
+                    <small class="field-hint">5-20 characters: letters, numbers, underscore</small>
+                <?php endif; ?>
 
                 <div class="input-box">
-                    <input type="email" id="registerEmail" name="Email" placeholder="Email">
+                    <input type="email" id="registerEmail" name="email" placeholder="Email"
+                           value="<?= e($old['email']) ?>" autocomplete="email"
+                           class="<?= isset($errors['email']) ? 'input-error' : '' ?>">
                     <i class="fa-solid fa-envelope"></i>
                 </div>
+                <?php if (isset($errors['email'])): ?>
+                    <small class="field-error"><?= e($errors['email']) ?></small>
+                <?php endif; ?>
 
                 <div class="input-box">
-                    <input type="password" id="registerPassword" name="Password" placeholder="Password">
+                    <input type="text" id="registerMobile" name="mobile" placeholder="Mobile (09XXXXXXXXX)"
+                           value="<?= e($old['mobile']) ?>" autocomplete="tel"
+                           class="<?= isset($errors['mobile']) ? 'input-error' : '' ?>">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <?php if (isset($errors['mobile'])): ?>
+                    <small class="field-error"><?= e($errors['mobile']) ?></small>
+                <?php endif; ?>
+
+                <div class="input-box">
+                    <input type="password" id="registerPassword" name="password" placeholder="Password"
+                           autocomplete="new-password"
+                           class="<?= isset($errors['password']) ? 'input-error' : '' ?>">
                     <i class="fa-solid fa-lock"></i>
                 </div>
+                <?php if (isset($errors['password'])): ?>
+                    <small class="field-error"><?= e($errors['password']) ?></small>
+                <?php else: ?>
+                    <small class="field-hint">8-15 characters with upper, lower, number &amp; symbol</small>
+                <?php endif; ?>
 
-                <button type="submit" class="btn">Register</button>
-
-                <p>or register with social platforms</p>
-
-                <div class="social-icons">
-                    <a href="#" aria-label="Google"><i class="fa-brands fa-google"></i></a>
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <div class="input-box">
+                    <input type="password" id="registerConfirm" name="confirm_password" placeholder="Confirm Password"
+                           autocomplete="new-password"
+                           class="<?= isset($errors['confirm_password']) ? 'input-error' : '' ?>">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
+                <?php if (isset($errors['confirm_password'])): ?>
+                    <small class="field-error"><?= e($errors['confirm_password']) ?></small>
+                <?php endif; ?>
+
+                <button type="submit" name="submit" value="register" class="btn">Register</button>
             </form>
         </div>
 
         <div class="toggle-box">
 
             <div class="toggle-panel toggle-left">
-
                 <h1>Hello, Welcome!</h1>
-
                 <p>Don't have an account?</p>
-
-                <button type="button" class="btn register-btn">
-                    Register
-                </button>
-
+                <button type="button" class="btn register-btn">Register</button>
             </div>
 
             <div class="toggle-panel toggle-right">
-
                 <h1>Welcome Back!</h1>
-
                 <p>Already have an account?</p>
-
-                <button type="button" class="btn login-btn">
-                    Login
-                </button>
-
+                <button type="button" class="btn login-btn">Login</button>
             </div>
 
         </div>
 
     </div>
-
-    <script>
-        $(document).ready(function(){
-
-            $("#registerForm").validate({
-
-                rules:{
-                    Username:{
-                        required: true,
-                        minlength: 8,
-                    },
-                    Email:{
-                        required: true,
-                        email: true
-                    },
-                    Password:{
-                        required: true,
-                        minlength: 8,
-                        maxlength: 15
-                    }
-                },
-                messages: {
-                    Username: {
-                        required: "Please enter your name.",
-                        minlength: "Name must be at least 8 characters long.",
-                        maxlength: "Name cannot exceed 10 characters."
-                    },
-                    Email: {
-                        required: "Please enter your  valid email address.",
-                        email: "Please enter a valid email address."
-                    },
-                    Password: {
-                        required: "Please provide a password.",
-                        minlength: "Your password must be at least 8 characters long."
-                    }
-                }
-
-            });
-
-        });
-    </script>
 
     <script src="static/register.js"></script>
 

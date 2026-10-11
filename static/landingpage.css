@@ -17,11 +17,17 @@
             --bg-topbar: #7494ec;
             --text-muted: #F4F1F6;
             --border-soft: #ECE6EF;
+
+            --ink: #1f2a44;
+            --ink-soft: #5b6784;
+            --card: #ffffff;
         }
 
         html, body {
             height: 100%;
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -344,4 +350,226 @@
                 bottom: 20px;
                 right: 32px;
             }
+        }
+
+        .mobile-topbar .brand-name { color: var(--p-900); font-size: 1.05rem; }
+
+        /* ---------- Sidebar polish ---------- */
+        .side-nav .nav-link[aria-current="page"] {
+            background: var(--p-900);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .side-nav .nav-link { color: #fff; }
+        .side-nav .nav-link:hover { color: #fff; }
+        .side-nav .nav-logout { margin-top: 18px; border-top: 1px solid rgba(255,255,255,.25); border-radius: 0 0 10px 10px; padding-top: 14px; }
+        .account-sub { color: rgba(255,255,255,.85); }
+
+        @media (min-width: 992px) {
+            .sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                align-self: flex-start;
+                overflow-y: auto;
+            }
+        }
+
+        /* ---------- Hero ---------- */
+        .greeting-card .carousel-item { min-height: 200px; }
+
+        .hero-btn {
+            display: inline-block;
+            background: #fff;
+            color: #3b5bc0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 999px;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .hero-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); color: #3b5bc0; }
+
+        /* ---------- Stat cards ---------- */
+        .stat-value { font-size: 1.7rem; font-weight: 700; color: #fff; line-height: 1.1; }
+        .stat-note  { font-size: 0.7rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+        .stat-icon  { background: rgba(255,255,255,.22); color: #fff; }
+
+        /* ---------- Section blocks ---------- */
+        .section-block { margin-top: 36px; scroll-margin-top: 16px; }
+
+        .section-head { margin-bottom: 16px; }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0;
+        }
+
+        .section-sub {
+            font-size: 0.85rem;
+            color: var(--ink-soft);
+            margin: 2px 0 0;
+        }
+
+        .demo-pill {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            color: #3b5bc0;
+            background: #e4ebfd;
+            padding: 3px 8px;
+            border-radius: 999px;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+
+        /* ---------- Services ---------- */
+        .service-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            height: 100%;
+            background: var(--card);
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 18px;
+            color: var(--ink);
+            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--p-900);
+            box-shadow: 0 8px 20px rgba(116,148,236,.22);
+            color: var(--ink);
+        }
+
+        .service-icon {
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
+            border-radius: 12px;
+            background: #e4ebfd;
+            color: #3b5bc0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .service-title { font-size: 0.92rem; font-weight: 700; }
+        .service-desc  { font-size: 0.78rem; color: var(--ink-soft); margin-top: 2px; }
+        .service-arrow { margin-left: auto; color: var(--p-900); }
+
+        /* ---------- Announcements ---------- */
+        .news-card {
+            height: 100%;
+            background: var(--card);
+            border: 1px solid var(--border-soft);
+            border-top: 4px solid var(--p-900);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .news-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+        .news-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #3b5bc0;
+            background: #e4ebfd;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .news-date  { font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); }
+        .news-title { font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 6px; }
+        .news-body  { font-size: 0.82rem; color: var(--ink-soft); margin: 0; line-height: 1.55; }
+
+        /* ---------- Requests table ---------- */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 8px 20px;
+        }
+
+        .request-table { width: 100%; border-collapse: collapse; }
+
+        .request-table th {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--ink-soft);
+            font-weight: 700;
+            padding: 14px 10px;
+            border-bottom: 1px solid var(--border-soft);
+            text-align: left;
+        }
+
+        .request-table td {
+            font-size: 0.85rem;
+            color: var(--ink);
+            padding: 14px 10px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .request-table tbody tr:last-child td { border-bottom: none; }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        .status-pill.processing     { background: #fff3d6; color: #8a5a00; }
+        .status-pill.ready-to-claim { background: #e1f5e8; color: #1d6b3a; }
+        .status-pill.pending        { background: #e4ebfd; color: #3b5bc0; }
+
+        /* ---------- Footer ---------- */
+        .site-footer {
+            background: #fff;
+            border-top: 1px solid var(--border-soft);
+            padding: 28px var(--margin) 16px;
+            margin-top: 24px;
+            color: var(--ink);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 24px;
+        }
+
+        .footer-brand   { font-weight: 700; font-size: 0.95rem; color: #3b5bc0; margin-bottom: 6px; }
+        .footer-heading { font-weight: 700; font-size: 0.8rem; margin-bottom: 8px; }
+        .footer-text    { font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 4px; }
+        .footer-link    { display: block; font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 4px; }
+        .footer-link:hover { color: #3b5bc0; }
+
+        .footer-bottom {
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-soft);
+            font-size: 0.72rem;
+            color: var(--ink-soft);
+            text-align: center;
+        }
+
+        @media (max-width: 767.98px) {
+            .footer-grid { grid-template-columns: 1fr; }
+
+            /* Table rows become stacked cards on phones */
+            .request-table thead { display: none; }
+            .request-table tr { display: block; padding: 10px 0; border-bottom: 1px solid var(--border-soft); }
+            .request-table tbody tr:last-child { border-bottom: none; }
+            .request-table td { display: flex; justify-content: space-between; gap: 12px; border: none; padding: 6px 4px; }
+            .request-table td::before { content: attr(data-label); font-weight: 700; color: var(--ink-soft); font-size: 0.72rem; text-transform: uppercase; }
         }

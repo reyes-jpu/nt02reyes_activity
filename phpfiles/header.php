@@ -1,7 +1,19 @@
-<meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Brgy IT Service Request</title>
+<div class="mobile-topbar">
+    <button class="btn btn-sm" id="menuToggle" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <i class="bi bi-list fs-4" style="color: var(--p-900);"></i>
+    </button>
+    <span class="brand-name">EBRGY</span>
+    <span style="width:32px;"></span>
+</div>
 
-        <script>
-            window.location.replace("login.php")
-        </script>
+<header class="topbar">
+    <span class="topbar-date" id="topbarDate"><?= date('l, F j, Y') ?></span>
+    <span class="topbar-brgy">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        <?= strtoupper(e(BARANGAY_NAME)) ?>
+    </span>
+    <span class="topbar-icons">
+        <i class="bi bi-search" role="button" aria-label="Search"></i>
+        <i class="bi bi-bell" role="button" aria-label="Notifications"></i>
+    </span>
+</header>

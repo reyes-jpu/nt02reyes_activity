@@ -1,3 +1,56 @@
+<?php
+require_once __DIR__ . '/phpfiles/config.php';
+require_once __DIR__ . '/phpfiles/functions.php';
+require_once __DIR__ . '/phpfiles/validation.php';
+
+// Already logged in? Go straight to the dashboard.
+redirect_if_logged_in();
+
+$errors   = [];
+$username = '';
+
+// Notices passed through the URL with GET (non-sensitive info only).
+$notice = '';
+if (isset($_GET['registered'])) {
+    $notice = 'Registration successful! You can now log in.';
+} elseif (isset($_GET['loggedout'])) {
+    $notice = 'You have been logged out.';
+} elseif (isset($_GET['login_required'])) {
+    $notice = 'Please log in to access your dashboard.';
+}
+
+// The form is sent with POST so the password never appears in the URL.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+
+    $username = trim(post_value('username'));
+    $password = post_value('password');
+
+    if (!csrf_valid()) {
+        $errors['form'] = 'Your session expired. Please try again.';
+    } else {
+        // 1) Validate the format with regular expressions.
+        $errors = validate_login($username, $password);
+
+        // 2) Check the credentials against the saved users.
+        if (empty($errors)) {
+            $user = find_user(load_users(), 'username', $username);
+
+            if ($user !== null && password_verify($password, $user['password_hash'])) {
+                session_regenerate_id(true);
+                $_SESSION['user'] = [
+                    'username' => $user['username'],
+                    'fullname' => $user['fullname'],
+                    'email'    => $user['email'],
+                ];
+                redirect('index.php');
+            }
+
+            // One generic message so attackers can't tell which part was wrong.
+            $errors['form'] = 'Invalid username or password. Please register first if you are new!';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,37 +60,53 @@
     <title>EBRGY | Login</title>
 
     <link rel="stylesheet" href="static/login.css">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.22.1/jquery.validate.min.js" integrity="sha512-qu7dMuIm2f0KcKZ3BOoP4c+Hn+r4E8PbD2Ro4rmKsOyheCxcwhzQpf6SojA76dn+owqfANzfTFUTkGA+HpHjOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="static/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 
 <body>
 
-    <div class="container" id="container">
+    <div class="container is-login" id="container">
 
         <div class="form-box login">
-            <form id="loginForm">
+            <form id="loginForm" method="post" action="login.php" novalidate>
                 <h1>Login</h1>
 
-                <div class="input-box">
-                    <input type="text" id="loginUsername" name="loginUsername" placeholder="Username">
-                    <i class="fa-solid fa-user"></i>
-                </div>
+                <?= csrf_field() ?>
+
+                <?php if ($notice !== ''): ?>
+                    <div class="form-alert success"><?= e($notice) ?></div>
+                <?php endif; ?>
+
+                <?php if (isset($errors['form'])): ?>
+                    <div class="form-alert error"><?= e($errors['form']) ?></div>
+                <?php endif; ?>
 
                 <div class="input-box">
-                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Password">
+                    <input type="text" id="loginUsername" name="username" placeholder="Username"
+                           value="<?= e($username) ?>" autocomplete="username"
+                           class="<?= isset($errors['username']) ? 'input-error' : '' ?>">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <?php if (isset($errors['username'])): ?>
+                    <small class="field-error"><?= e($errors['username']) ?></small>
+                <?php endif; ?>
+
+                <div class="input-box">
+                    <input type="password" id="loginPassword" name="password" placeholder="Password"
+                           autocomplete="current-password"
+                           class="<?= isset($errors['password']) ? 'input-error' : '' ?>">
                     <i class="fa-solid fa-lock"></i>
                 </div>
+                <?php if (isset($errors['password'])): ?>
+                    <small class="field-error"><?= e($errors['password']) ?></small>
+                <?php endif; ?>
 
                 <div class="forgot-link">
                     <a href="#" id="forgotPassword">Forgot Password?</a>
                 </div>
 
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" name="submit" value="login" class="btn">Login</button>
 
                 <p>or login with social platforms</p>
 
@@ -51,51 +120,14 @@
         </div>
 
         <div class="toggle-box">
-
             <div class="toggle-panel toggle-left">
-
                 <h1>Hello, Welcome!</h1>
-
                 <p>Don't have an account?</p>
-
-                <button type="button" class="btn register-btn">
-                    Register
-                </button>
-
+                <button type="button" class="btn register-btn">Register</button>
             </div>
-
         </div>
 
     </div>
-
-    <script>
-        $(document).ready(function(){
-
-            $("#loginForm").validate({
-                rules: {
-                    loginUsername: {
-                        required: true,
-                        minlength: 8
-                    },
-                    loginPassword: {
-                        required: true,
-                        minlength: 8
-                    }
-                },
-                messages: {
-                    loginUsername: {
-                        required: "Please enter your username.",
-                        minlength: "Username must be at least 8 characters long."
-                    },
-                    loginPassword: {
-                        required: "Please enter your password.",
-                        minlength: "Password must be at least 8 characters long."
-                    }
-                }
-            });
-
-        });
-    </script>
 
     <script src="static/login.js"></script>
 

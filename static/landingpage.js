@@ -1,50 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const currentUserData = localStorage.getItem('currentUser');
 
-    if (!currentUserData) {
-        alert('Please login first to access the dashboard.');
-        window.location.href = 'login.php';
-        return;
-    }
-
-    const currentUser = JSON.parse(currentUserData);
-
-    const placeholderNames = document.querySelectorAll('.placeholder-name, .account-name');
-    placeholderNames.forEach(el => {
-        el.textContent = currentUser.username;
-    });
-
-    const topbarDate = document.getElementById('topbarDate');
-    if (topbarDate) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        topbarDate.textContent = new Date().toLocaleDateString('en-US', options);
-    }
-
+    // Mobile sidebar toggle
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 
+    const closeSidebar = () => {
+        if (!sidebar) return;
+        sidebar.classList.remove('show');
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+    };
+
     if (menuToggle && sidebar) {
         menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('show');
-            if (sidebarBackdrop) sidebarBackdrop.classList.toggle('show');
+            const open = sidebar.classList.toggle('show');
+            if (sidebarBackdrop) sidebarBackdrop.classList.toggle('show', open);
+            menuToggle.setAttribute('aria-expanded', String(open));
         });
 
-        if (sidebarBackdrop) {
-            sidebarBackdrop.addEventListener('click', () => {
-                sidebar.classList.remove('show');
-                sidebarBackdrop.classList.remove('show');
-            });
-        }
+        if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+        // Close the menu after tapping a link (mobile)
+        sidebar.querySelectorAll('.side-nav .nav-link').forEach(link => {
+            link.addEventListener('click', closeSidebar);
+        });
     }
 
-    const accountCard = document.querySelector('.account-card');
+    // Account card -> confirm, then PHP logout.php destroys the session
+    const accountCard = document.getElementById('accountCard');
     if (accountCard) {
         accountCard.addEventListener('click', () => {
-            const confirmLogout = confirm('Do you want to log out?');
-            if (confirmLogout) {
-                localStorage.removeItem('currentUser');
-                window.location.href = 'login.php';
+            if (confirm('Do you want to log out?')) {
+                window.location.href = 'logout.php';
             }
         });
     }
