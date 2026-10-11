@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
 
-        <?
-            php include 'phpfiles/header.php';
+        <?php 
+            include 'phpfiles/header.php';
         ?>
 
     </head>
