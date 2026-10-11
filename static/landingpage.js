@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!currentUserData) {
         alert('Please login first to access the dashboard.');
-        window.location.href = 'auth.php';
+        window.location.href = 'login.php';
         return;
     }
 
