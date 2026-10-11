@@ -108,3 +108,4 @@ function find_user(array $users, string $field, string $value): ?array
         }
     }
     return null;
+}
