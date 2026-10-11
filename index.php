@@ -1,6 +1,6 @@
 <?php
-include 'phpfiles/auth.php';          // loads settings + redirects to login.php if not logged in
-include 'phpfiles/sample_data.php';   // demo content used by the sections below
+include 'phpfiles/auth.php';          
+include 'phpfiles/sample_data.php';   
 ?>
 <!DOCTYPE html>
 <html lang="en">

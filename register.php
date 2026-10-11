@@ -8,10 +8,10 @@ redirect_if_logged_in();
 $errors = [];
 $old    = ['fullname' => '', 'username' => '', 'email' => '', 'mobile' => ''];
 
-// Runs only when the form was submitted with POST (the submit button is named "submit").
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
-    // Sanitize: remove illegal characters / extra spaces before validating.
+    
     $old['fullname'] = clean_input(post_value('fullname'));
     $old['username'] = trim(post_value('username'));
     $old['email']    = (string) filter_var(trim(post_value('email')), FILTER_SANITIZE_EMAIL);
@@ -22,10 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if (!csrf_valid()) {
         $errors['form'] = 'Your session expired. Please try again.';
     } else {
-        // 1) Validate the format of every field (regular expressions + filter_var).
+        
         $errors = validate_registration($old, $password, $confirm);
 
-        // 2) Make sure the username / email are not already taken.
+       
         if (empty($errors)) {
             $users = load_users();
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             }
         }
 
-        // 3) All good: save the user (password is hashed, never stored as plain text).
+        
         if (empty($errors)) {
             $users[] = [
                 'fullname'      => $old['fullname'],

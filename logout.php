@@ -2,7 +2,6 @@
 require_once __DIR__ . '/phpfiles/config.php';
 require_once __DIR__ . '/phpfiles/functions.php';
 
-// Clear the session data and the session cookie.
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {

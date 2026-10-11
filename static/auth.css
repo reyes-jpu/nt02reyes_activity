@@ -1,10 +1,8 @@
-/* Shared styles for the PHP-validated login & register forms */
 
-/* Taller cards so server-side error messages have room */
 .container.is-login    { height: 620px; }
 .container.is-register { height: 800px; }
 
-/* Field error / hint text sits right under its input */
+
 .field-error,
 .field-hint {
     display: block;
@@ -21,7 +19,7 @@
     box-shadow: 0 0 0 2px #e63946 inset;
 }
 
-/* Success / error banner at the top of the form */
+
 .form-alert {
     font-size: 13px;
     text-align: left;
@@ -34,7 +32,7 @@
 .form-alert.success { background: #e7f6ec; color: #1d6b3a; }
 .form-alert.error   { background: #fdeaec; color: #b3202d; }
 
-/* Tighter spacing on the longer register form */
+
 .is-register .form-box { padding: 30px 40px; }
 .is-register .input-box { margin: 14px 0; }
 .is-register .btn { margin-top: 6px; }
@@ -44,5 +42,5 @@
     .container.is-register { height: 1080px; }
 }
 
-/* Keep "Forgot Password?" clear of any error text above it */
+
 .is-login .forgot-link { margin: 6px 0 16px; }

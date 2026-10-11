@@ -3,13 +3,12 @@ require_once __DIR__ . '/phpfiles/config.php';
 require_once __DIR__ . '/phpfiles/functions.php';
 require_once __DIR__ . '/phpfiles/validation.php';
 
-// Already logged in? Go straight to the dashboard.
 redirect_if_logged_in();
 
 $errors   = [];
 $username = '';
 
-// Notices passed through the URL with GET (non-sensitive info only).
+
 $notice = '';
 if (isset($_GET['registered'])) {
     $notice = 'Registration successful! You can now log in.';
@@ -19,7 +18,7 @@ if (isset($_GET['registered'])) {
     $notice = 'Please log in to access your dashboard.';
 }
 
-// The form is sent with POST so the password never appears in the URL.
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
     $username = trim(post_value('username'));
@@ -28,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if (!csrf_valid()) {
         $errors['form'] = 'Your session expired. Please try again.';
     } else {
-        // 1) Validate the format with regular expressions.
+        
         $errors = validate_login($username, $password);
 
-        // 2) Check the credentials against the saved users.
+        
         if (empty($errors)) {
             $user = find_user(load_users(), 'username', $username);
 
@@ -45,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 redirect('index.php');
             }
 
-            // One generic message so attackers can't tell which part was wrong.
+           
             $errors['form'] = 'Invalid username or password. Please register first if you are new!';
         }
     }
