@@ -44,7 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmLogout = confirm('Do you want to log out?');
             if (confirmLogout) {
                 localStorage.removeItem('currentUser');
+<<<<<<< HEAD
                 window.location.href = 'login.php';
+=======
+                window.location.href = 'auth.html';
+>>>>>>> 0ee2c426ba417615b7ef3335dc6b74bacd095450
             }
         });
     }
