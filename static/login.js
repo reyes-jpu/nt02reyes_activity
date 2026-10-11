@@ -47,7 +47,7 @@ $(document).ready(function () {
 
         if (matchedUser) {
             localStorage.setItem('currentUser', JSON.stringify(matchedUser));
-            window.location.href = 'index.php';
+            window.location.href = 'landingpage.php';
         } else {
             $('#loginPasswordError').text('Invalid username or password. Please register first!');
             $password.addClass('input-error');
